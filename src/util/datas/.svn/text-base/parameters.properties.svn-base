@@ -1,0 +1,5 @@
+ipCore=127.0.0.1
+portCore=22222
+refreshInterval=4
+protocolsSupported=25,80,110
+delayBeforeRemoveData=0
