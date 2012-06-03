@@ -780,7 +780,7 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
     /*SELECT POSITION ON EVOLUTION BAR*/
     private void jSlider2MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jSlider2MouseReleased
         
-        
+        /*TODO*/
         
         
     }//GEN-LAST:event_jSlider2MouseReleased
