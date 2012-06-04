@@ -49,6 +49,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import util.DataFiltering;
 import util.Module;
 
 /**
@@ -62,17 +63,15 @@ public class CommunicationManagerV2
     private ControlMethod cm;
     private List<CoreEvent> object_to_call;
     private boolean autoRefresh; 
-    private boolean notYetStarted;
+    //private boolean notYetStarted;
     
     private boolean refreshTarget, refreshCoreState;
-    
     private Thread refresh;
     private Map<NetworkProtocol,NetworkProtocol> networkProtocolSet;
     private String source;
-        
     private CoreState state;
-    
     private List<Module> modules;
+    private List<DataFiltering> filters;
     
     private CommunicationManagerV2()
     {
@@ -82,7 +81,6 @@ public class CommunicationManagerV2
         this.autoRefresh = true;
         this.refresh = null;
         networkProtocolSet = new HashMap<NetworkProtocol, NetworkProtocol>();
-        notYetStarted = true;
         source = null;
         refreshTarget = true;
         refreshCoreState = false;
@@ -90,6 +88,8 @@ public class CommunicationManagerV2
         state = new CoreState(0, 0, 0);
         
         modules = new LinkedList<Module>();
+        
+        filters = new LinkedList<DataFiltering>();
         
         /*routine de sortie*/
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() 
@@ -170,9 +170,7 @@ public class CommunicationManagerV2
                 
                 if(masterFilter != null && masterFilter.length() > 0)
                     cm.setMasterFilter(masterFilter);
-                
-                notYetStarted = true;
-                
+                                
                 setRefreshTarget(true);
                 setRefreshCoreState(false);
                 setAutoRefresh(true);
@@ -189,8 +187,6 @@ public class CommunicationManagerV2
                 if(masterFilter != null && masterFilter.length() > 0)
                     cm.setMasterFilter(masterFilter);
                 cm.parseFile();
-
-                notYetStarted = true;
                 
                 setRefreshTarget(true);
                 setRefreshCoreState(true);
@@ -289,7 +285,7 @@ public class CommunicationManagerV2
     
     public void refreshProtocolList() throws IOException, ControlException
     {
-        cm.updateProtocolList(networkProtocolSet);
+        cm.updateProtocolList(networkProtocolSet, filters);
         fireListUpdated();
     }
     
@@ -464,8 +460,6 @@ public class CommunicationManagerV2
 
     public void play() throws IOException, ControlException 
     {
-        notYetStarted = false;
-
         if(this.getState().IS_FILE())
         {
             cm.fileRead();
@@ -488,7 +482,6 @@ public class CommunicationManagerV2
     public void stopAllCapture() throws IOException, ControlException
     {
         cm.stopAllCapture();
-        notYetStarted = true;
         
         for(NetworkProtocol np : this.networkProtocolSet.values())
         {
@@ -680,5 +673,19 @@ public class CommunicationManagerV2
         }
         
         return false;
+    }
+
+    /**
+     * @return the filters
+     */
+    public List<DataFiltering> getFilters() {
+        return filters;
+    }
+
+    /**
+     * @param filters the filters to set
+     */
+    public void setFilters(List<DataFiltering> filters) {
+        this.filters = filters;
     }
 }

@@ -41,6 +41,7 @@ import dataStruct.TransportProtocol;
 import java.util.LinkedList;
 import java.util.List;
 import util.DataFiltering;
+import wrapper.CommunicationManagerV2;
 
 /**
  *
@@ -95,7 +96,7 @@ public class filterDialog extends javax.swing.JDialog {
         jCheckBox2.setText("Hide local address (::, 127.0.0.1, etc.)");
 
         jCheckBox3.setSelected(true);
-        jCheckBox3.setText("Hide broadcast (255.255.255.255, etc.)");
+        jCheckBox3.setText("Hide multicast (224.0.0.1, etc.)");
 
         jButton1.setText("OK");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -127,7 +128,7 @@ public class filterDialog extends javax.swing.JDialog {
                         .add(jRadioButton3))
                     .add(jCheckBox2)
                     .add(jCheckBox3))
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(27, Short.MAX_VALUE))
             .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(133, Short.MAX_VALUE)
                 .add(jButton2)
@@ -165,7 +166,7 @@ public class filterDialog extends javax.swing.JDialog {
         
         if(jCheckBox1.isSelected())/*port under 1024*/
         {
-            getFilter().add(new DataFiltering() {
+            filter.add(new DataFiltering() {
 
                 @Override
                 public boolean validDatas(AbstractProtocolCaptured apc) {
@@ -184,7 +185,7 @@ public class filterDialog extends javax.swing.JDialog {
         
         if(jRadioButton1.isSelected())
         {
-            getFilter().add(new DataFiltering() {
+            filter.add(new DataFiltering() {
 
                 @Override
                 public boolean validDatas(AbstractProtocolCaptured apc) {
@@ -202,7 +203,7 @@ public class filterDialog extends javax.swing.JDialog {
         }
         else if(jRadioButton2.isSelected())
         {
-            getFilter().add(new DataFiltering() {
+            filter.add(new DataFiltering() {
 
                 @Override
                 public boolean validDatas(AbstractProtocolCaptured apc) {
@@ -220,7 +221,7 @@ public class filterDialog extends javax.swing.JDialog {
         }
         else if(jRadioButton3.isSelected())
         {
-            getFilter().add(new DataFiltering() {
+            filter.add(new DataFiltering() {
 
                 @Override
                 public boolean validDatas(AbstractProtocolCaptured apc) {
@@ -239,7 +240,7 @@ public class filterDialog extends javax.swing.JDialog {
         
         if(jCheckBox2.isSelected())/*loopback*/
         {
-            getFilter().add(new DataFiltering() {
+            filter.add(new DataFiltering() {
 
                 @Override
                 public boolean validDatas(AbstractProtocolCaptured apc) {
@@ -256,10 +257,26 @@ public class filterDialog extends javax.swing.JDialog {
             });
         }
         
-        if(jCheckBox3.isSelected())/*broadcast*/
+        if(jCheckBox3.isSelected())/*multicast*/
         {
-            
+            filter.add(new DataFiltering() {
+
+                @Override
+                public boolean validDatas(AbstractProtocolCaptured apc) {
+                    if(apc instanceof NetworkProtocol)
+                    {
+                        NetworkProtocol np = (NetworkProtocol)apc;
+                        
+                        if(np.getAddr_dest().isMulticastAddress())
+                            return false;
+                        
+                    }
+                    return true;
+                }
+            });
         }
+        
+        CommunicationManagerV2.getInstance().setFilters(filter);
         
         this.setVisible(false);
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -285,6 +302,161 @@ public class filterDialog extends javax.swing.JDialog {
      * @return the filter
      */
     public List<DataFiltering> getFilter() {
+        return filter;
+    }
+    
+    public static List<DataFiltering> getDefaultFilter()
+    {
+        List<DataFiltering> filter = new LinkedList<DataFiltering>();
+        
+        filter.add(new DataFiltering() 
+        {
+            @Override
+            public boolean validDatas(AbstractProtocolCaptured apc) 
+            {
+                if(apc instanceof TransportProtocol)
+                {
+                    TransportProtocol tp = (TransportProtocol)apc;
+                    
+                    if( tp.getPort_destination() > 1024)
+                        return false;
+
+                }
+                return true;
+            }
+        });
+
+        filter.add(new DataFiltering() 
+        {
+            @Override
+            public boolean validDatas(AbstractProtocolCaptured apc) 
+            {
+                if(apc instanceof TransportProtocol)
+                {
+                    TransportProtocol tp = (TransportProtocol)apc;
+                    
+                    if(tp.getType() != TransportProtocol.PROTOCOL_TYPE_TCP && tp.getType() != TransportProtocol.PROTOCOL_TYPE_UDP)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        });
+
+        filter.add(new DataFiltering() 
+        {
+            @Override
+            public boolean validDatas(AbstractProtocolCaptured apc) 
+            {
+                if(apc instanceof NetworkProtocol)
+                {
+                    NetworkProtocol np = (NetworkProtocol)apc;
+
+                    if(np.getAddr_dest().isLoopbackAddress() || np.getAddr_dest().isLinkLocalAddress())
+                        return false;
+
+                }
+                return true;
+            }
+        });
+
+        filter.add(new DataFiltering() 
+        {
+            @Override
+            public boolean validDatas(AbstractProtocolCaptured apc) 
+            {
+                if(apc instanceof NetworkProtocol)
+                {
+                    NetworkProtocol np = (NetworkProtocol)apc;
+
+                    if(np.getAddr_dest().isMulticastAddress())
+                        return false;
+
+                }
+                return true;
+            }
+        });
+
+        return filter;
+    }
+    
+    
+    /*
+     *
+     */
+    public static List<DataFiltering> getDefaultHTTPFilter()
+    {
+        List<DataFiltering> filter = new LinkedList<DataFiltering>();
+        
+        filter.add(new DataFiltering() 
+        {
+            @Override
+            public boolean validDatas(AbstractProtocolCaptured apc) 
+            {
+                if(apc instanceof TransportProtocol)
+                {
+                    TransportProtocol tp = (TransportProtocol)apc;
+
+                    if(tp.getPort_destination() != 80 && tp.getPort_destination() != 8080)
+                        return false;
+
+                }
+                return true;
+            }
+        });
+
+        filter.add(new DataFiltering() 
+        {
+            @Override
+            public boolean validDatas(AbstractProtocolCaptured apc) 
+            {
+                if(apc instanceof TransportProtocol)
+                {
+                    TransportProtocol tp = (TransportProtocol)apc;
+
+                    if(tp.getType() != TransportProtocol.PROTOCOL_TYPE_TCP)
+                        return false;
+
+                }
+                return true;
+            }
+        });
+
+        filter.add(new DataFiltering() 
+        {
+            @Override
+            public boolean validDatas(AbstractProtocolCaptured apc) 
+            {
+                if(apc instanceof NetworkProtocol)
+                {
+                    NetworkProtocol np = (NetworkProtocol)apc;
+
+                    if(np.getAddr_dest().isLoopbackAddress() || np.getAddr_dest().isLinkLocalAddress())
+                        return false;
+
+                }
+                return true;
+            }
+        });
+
+        filter.add(new DataFiltering() 
+        {
+            @Override
+            public boolean validDatas(AbstractProtocolCaptured apc) 
+            {
+                if(apc instanceof NetworkProtocol)
+                {
+                    NetworkProtocol np = (NetworkProtocol)apc;
+
+                    if(np.getAddr_dest().isMulticastAddress())
+                        return false;
+
+                }
+                return true;
+            }
+        });
+
         return filter;
     }
 }

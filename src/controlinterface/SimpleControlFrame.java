@@ -35,6 +35,7 @@ you modify it: responsibilities to respect the freedom of others.
 
 package controlinterface;
 
+import controlinterface.dialog.filterDialog;
 import dataStruct.NetworkProtocol;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
@@ -100,6 +101,7 @@ public class SimpleControlFrame extends javax.swing.JFrame implements CoreEvent
         cm.getState().setFile(false);
         cm.getState().setStream(true);
         captureStarted = false;
+        cm.setFilters(filterDialog.getDefaultHTTPFilter());
         
         System.out.println(""+cm.getState());
     }

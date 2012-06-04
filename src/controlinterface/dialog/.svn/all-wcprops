@@ -3,11 +3,11 @@ svn:wc:ra_dav:version-url
 V 98
 /studentsvn/tfe_EPL-2011-058/!svn/ver/697/src/control/ControlInterface/src/controlinterface/dialog
 END
-ParameterDialog.java
+filterDialog.java
 K 25
 svn:wc:ra_dav:version-url
-V 119
-/studentsvn/tfe_EPL-2011-058/!svn/ver/697/src/control/ControlInterface/src/controlinterface/dialog/ParameterDialog.java
+V 116
+/studentsvn/tfe_EPL-2011-058/!svn/ver/698/src/control/ControlInterface/src/controlinterface/dialog/filterDialog.java
 END
 ParameterDialog.form
 K 25
@@ -15,11 +15,11 @@ svn:wc:ra_dav:version-url
 V 119
 /studentsvn/tfe_EPL-2011-058/!svn/ver/697/src/control/ControlInterface/src/controlinterface/dialog/ParameterDialog.form
 END
-filterDialog.java
+filterDialog.form
 K 25
 svn:wc:ra_dav:version-url
 V 116
-/studentsvn/tfe_EPL-2011-058/!svn/ver/697/src/control/ControlInterface/src/controlinterface/dialog/filterDialog.java
+/studentsvn/tfe_EPL-2011-058/!svn/ver/698/src/control/ControlInterface/src/controlinterface/dialog/filterDialog.form
 END
 NewStreamDialog.java
 K 25
@@ -27,15 +27,15 @@ svn:wc:ra_dav:version-url
 V 119
 /studentsvn/tfe_EPL-2011-058/!svn/ver/697/src/control/ControlInterface/src/controlinterface/dialog/NewStreamDialog.java
 END
-filterDialog.form
-K 25
-svn:wc:ra_dav:version-url
-V 116
-/studentsvn/tfe_EPL-2011-058/!svn/ver/697/src/control/ControlInterface/src/controlinterface/dialog/filterDialog.form
-END
 NewStreamDialog.form
 K 25
 svn:wc:ra_dav:version-url
 V 119
 /studentsvn/tfe_EPL-2011-058/!svn/ver/697/src/control/ControlInterface/src/controlinterface/dialog/NewStreamDialog.form
+END
+ParameterDialog.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/studentsvn/tfe_EPL-2011-058/!svn/ver/697/src/control/ControlInterface/src/controlinterface/dialog/ParameterDialog.java
 END

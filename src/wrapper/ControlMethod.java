@@ -43,7 +43,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -51,6 +50,7 @@ import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import util.DataFiltering;
 
 /**
  *
@@ -119,7 +119,7 @@ public class ControlMethod
         return receiveStringList(COMMAND_DEVICE_LIST);
     }
     
-    public synchronized void updateProtocolList(Map<NetworkProtocol,NetworkProtocol> set) throws IOException, ControlException
+    public synchronized void updateProtocolList(Map<NetworkProtocol,NetworkProtocol> set, List<DataFiltering> filters) throws IOException, ControlException
     {
         System.out.println("UPDATE PROTOCOL LIST");
         dos.write(COMMAND_GET_PROTOCOL_LIST);
@@ -129,7 +129,7 @@ public class ControlMethod
         //Map<NetworkProtocol,NetworkProtocol> set = new HashMap<NetworkProtocol,NetworkProtocol>();
         
         long entries_count = dis.readInt()&0xFFFFFFFFL;
-        while(entries_count-- > 0)
+        mainloop : while(entries_count-- > 0)
         {
             NetworkProtocol np = new NetworkProtocol();
             TransportProtocol tp = new TransportProtocol(np);
@@ -177,19 +177,13 @@ public class ControlMethod
                 np.setAddr_src(InetAddress.getByAddress(ip_s));
                 np.setAddr_dest(InetAddress.getByAddress(ip_d));
             }
-            
-            /*TODO improve filter */
-            
-            /*si ce n'est pas du tcp ou de l'udp, bye bye*/
-            if( tp.getType() != TransportProtocol.PROTOCOL_TYPE_TCP && tp.getType() != TransportProtocol.PROTOCOL_TYPE_UDP)
+
+            for(DataFiltering df : filters)
             {
-                continue;
-            }
-            
-            /*recherche du protocole web*/
-            if(tp.getPort_destination() != 80 && tp.getPort_destination() != 8080)
-            {
-                continue;
+                if(!df.validDatas(tp) || !df.validDatas(np))
+                {
+                    continue mainloop;
+                }
             }
             
             if(set.containsKey(np))
@@ -342,6 +336,7 @@ public class ControlMethod
     
     public synchronized void testMasterFilter(String filter) throws IOException, ControlException
     {
+        System.out.println("TOTO");
         sendString(COMMAND_TEST_MASTER_FILTER,filter);
     }
     

@@ -35,6 +35,7 @@ you modify it: responsibilities to respect the freedom of others.
 
 package controlinterface;
 
+import controlinterface.dialog.MasterFilter;
 import controlinterface.dialog.NewStreamDialog;
 import controlinterface.dialog.ParameterDialog;
 import controlinterface.dialog.filterDialog;
@@ -149,6 +150,7 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
             cm.getState().setFile(false);
             cm.getState().setStream(true);
         }
+        cm.setFilters(filterDialog.getDefaultFilter());
     }
 
     /**
@@ -194,6 +196,7 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
         jMenu2 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
+        jMenuItem4 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -498,6 +501,14 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
             }
         });
         jMenu2.add(jMenuItem3);
+
+        jMenuItem4.setText("Master filter");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem4ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem4);
 
         jMenuBar1.add(jMenu2);
 
@@ -872,17 +883,12 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
 
     /*filtering menu*/
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
-        filterDialog dialog = new filterDialog(new javax.swing.JFrame(), true);
-        dialog.setVisible(true);
-        
-        List<DataFiltering> filters = dialog.getFilter();
-        
-        if(filters != null)
-        {
-            /*TODO*/
-        }
-        
+        new filterDialog(this, true).setVisible(true);
     }//GEN-LAST:event_jMenuItem3ActionPerformed
+
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        new MasterFilter(this, true).setVisible(true);
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     @Override
     public void protocoleListUpdated() 
@@ -1194,6 +1200,7 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

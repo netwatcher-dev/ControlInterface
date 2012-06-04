@@ -40,7 +40,7 @@
                   <Component id="jCheckBox2" alignment="0" min="-2" max="-2" attributes="0"/>
                   <Component id="jCheckBox3" alignment="0" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace pref="27" max="32767" attributes="0"/>
           </Group>
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace pref="133" max="32767" attributes="0"/>
@@ -117,7 +117,7 @@
     <Component class="javax.swing.JCheckBox" name="jCheckBox3">
       <Properties>
         <Property name="selected" type="boolean" value="true"/>
-        <Property name="text" type="java.lang.String" value="Hide broadcast (255.255.255.255, etc.)"/>
+        <Property name="text" type="java.lang.String" value="Hide multicast (224.0.0.1, etc.)"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="jButton1">

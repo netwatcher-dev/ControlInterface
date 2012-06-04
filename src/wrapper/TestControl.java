@@ -41,10 +41,12 @@ import exceptionPackage.ControlException;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import util.DataFiltering;
 
 /**
  *
@@ -230,7 +232,7 @@ public class TestControl
                 else if(next.startsWith("plist"))
                 {
                     HashMap<NetworkProtocol,NetworkProtocol> m = new HashMap<NetworkProtocol, NetworkProtocol>();
-                    cm.updateProtocolList(m);
+                    cm.updateProtocolList(m, new LinkedList<DataFiltering>());
                     
                     for(NetworkProtocol pip : m.keySet())
                     {
