@@ -13,6 +13,8 @@ import dataStruct.TransportProtocol;
 import exceptionPackage.ControlException;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.LinkedList;
@@ -22,6 +24,8 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
+import util.HTTPModule;
+import util.Module;
 import wrapper.CommunicationManagerV2;
 import wrapper.CoreEvent;
 
@@ -39,7 +43,7 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
     private static final String PROTOCOL_NOT_DETECTED = "Protocol not detected";
     private static final String PROTOCOL_NOT_SUPPORTED = "Protocol not supported";
     private static final String WANT_TO_LAUNCH_APP = "Do you want to launch the application ?";
-    private static final String LAUNCH_APP = "Capture";
+    private static final String LAUNCH_APP = "Reconstitution";
     private static final String STOP_APP = "Stop";
     private static final String PAUSE = "Pause";
     private static final String RESUME = "Resume";
@@ -93,13 +97,18 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
                 jToggleButton1.setSelected(true);
                 jToggleButton1.setIcon(iconDisconnect);
                 enableUtilButton(true);
+                                
                 
-                if(cm.getState().IS_FILE())
+                /*if(cm.getState().IS_FILE())
                 {
                     jCheckBox2.setSelected(false);
                 }
+                */
                 
-                getRefreshSourceWorker(cm.getSelectedSource()).execute();
+                cm.getState().setFile(false);
+                cm.getState().setStream(true);
+                
+                getRefreshSourceWorker(null, true).execute();
             }
         }
         else
@@ -107,7 +116,6 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
             cm.getState().setFile(false);
             cm.getState().setStream(true);
         }
-        
     }
 
     /**
@@ -152,6 +160,7 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
+        jMenuItem3 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -236,7 +245,7 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
         jToolBar2.add(jSeparator3);
 
         jCheckBox2.setSelected(true);
-        jCheckBox2.setText("Live mode");
+        jCheckBox2.setText("Real time");
         jCheckBox2.setEnabled(false);
         jCheckBox2.setFocusable(false);
         jCheckBox2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -322,7 +331,7 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jButton1)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jSlider2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 194, Short.MAX_VALUE)
+                .add(jSlider2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -366,7 +375,7 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
                 .addContainerGap()
                 .add(jToggleButton2)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jSlider1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE)
+                .add(jSlider1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 228, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -379,7 +388,7 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
                 .addContainerGap())
         );
 
-        jButton8.setText("Capture");
+        jButton8.setText("Reconsitution");
         jButton8.setEnabled(false);
         jButton8.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -395,7 +404,7 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
                 .addContainerGap()
                 .add(jButton8)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jLabel7, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 153, Short.MAX_VALUE)
+                .add(jLabel7, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
@@ -449,6 +458,14 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
         });
         jMenu2.add(jMenuItem2);
 
+        jMenuItem3.setText("Filtering");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem3);
+
         jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
@@ -462,15 +479,15 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(jLabel1)
-                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE))
+                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                     .add(org.jdesktop.layout.GroupLayout.LEADING, jLabel3)
-                    .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE))
+                    .add(jScrollPane2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(jLabel2)
-                    .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 169, Short.MAX_VALUE))
+                    .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE))
                 .add(20, 20, 20)
                 .add(jPanel3, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -564,8 +581,8 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
         cm.getState().setStream(jCheckBox2.isSelected());
         cm.getState().setFile(!jCheckBox2.isSelected());
         
-        dlm1.removeAllElements();
-        getRefreshSourceWorker(null).execute(); 
+        this.clearJlist();
+        getRefreshSourceWorker(null,true).execute(); 
     }//GEN-LAST:event_jCheckBox2ActionPerformed
     
     /* ADD A NEW IP IN STREAM LIST */
@@ -589,16 +606,38 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
         else
         {
             return;
-        }
+        }        
         
-        enableUtilButton(false);
         if(apc.isCaptured())
         {
+            
+            enableUtilButton(false);
             getStopCaptureWorker(apc).execute();
         }
         else
         {
-            getStartCaptureWorker(apc).execute();
+            FilenameFilter ff = new FilenameFilter() {@Override public boolean accept(File file, String name) 
+            {
+                return !name.startsWith(".") && name.endsWith(".jar") && !name.startsWith("controlInterface");
+            }};
+            String [] files = new File(".").list(ff);
+            
+            if(files.length == 0)
+            {
+                JOptionPane.showMessageDialog(this,"There is no reconstitution module in the current directory : "+new File(".").getAbsolutePath(),"No reconstitution module",JOptionPane.WARNING_MESSAGE);
+                System.exit(1);
+            }
+            
+            String s = (String)JOptionPane.showInputDialog(this,"Module choice : ","Choose a Reconstitution module",JOptionPane.PLAIN_MESSAGE,null,files,null);
+            
+            if(s == null)
+                System.exit(1);
+            
+            Module m = new HTTPModule(s);
+
+            
+            enableUtilButton(false);
+            getStartCaptureWorker(apc,m).execute();
         }
         
     }//GEN-LAST:event_jButton8ActionPerformed
@@ -607,22 +646,16 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
         if(evt.getValueIsAdjusting())
             return;
 
-        enableJlist(false);
+        enableUtilButton(false);
+        
         String source = (String)jList1.getSelectedValue();
         if(source != null)
         {
             cm.removeAllProtocol();
             dlm2.clear();
             dlm3.clear();
-            try 
-            {
-                cm.setSource(source);
-                fillNetworkList();
-            } 
-            catch (IOException ex) {managerIOException("Update source list",ex);} 
-            catch (ControlException ex) {managerControlException("Update source list",ex);}
+            getSelectSourceWorker(source).execute();
         }
-        enableJlist(true);
     }//GEN-LAST:event_jList1ValueChanged
 
     /*Value change in JLIST 2 (IP)*/
@@ -779,11 +812,35 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
 
     /*SELECT POSITION ON EVOLUTION BAR*/
     private void jSlider2MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jSlider2MouseReleased
+        if(!jSlider2.isEnabled())
+            return;
         
-        /*TODO*/
-        
-        
+        if(!this.captureStarted)
+        {
+            if(cm.getState().IS_FINISHED())
+                jSlider2.setValue(100);
+            else
+                jSlider2.setValue(0);
+            return;
+        }
+            
+            
+        if(cm.getState().IS_PARSED())
+        {
+            enableUtilButton(false); /*freeze the reader*/
+            getEvolutionWorker(jSlider2.getValue()).execute();
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(this,"The file is not yet parsed, please wait and retry","Parsing file",JOptionPane.WARNING_MESSAGE);
+            jSlider2.setValue(0);
+        }
     }//GEN-LAST:event_jSlider2MouseReleased
+
+    /*filtering menu*/
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     @Override
     public void protocoleListUpdated() 
@@ -793,14 +850,6 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
             fillNetworkList();
             enableJlist(true);
             jCheckBox1.setSelected(true);
-        }});
-    }
-
-    @Override
-    public void connexionClosed() 
-    {
-        java.awt.EventQueue.invokeLater(new Runnable() { @Override public void run() {
-            enableUtilButton(false);
         }});
     }
 
@@ -831,25 +880,62 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
     
     /* FREEZE BUTTON */    
     private void enableUtilButton(boolean enable)
-    {
-        /*TODO afficher plus intelligement que ça*/
-        
+    {        
         jToggleButton1.setEnabled(enable); /*connexion button*/
-        jButton1.setEnabled(enable); /*start/stop*/
-        jToggleButton2.setEnabled(enable); /*record file*/
+        
         jButton3.setEnabled(enable); /*refresh button*/
         jButton6.setEnabled(enable); /*filter button*/
-        jButton4.setEnabled(enable); /*stop button*/
+        
         jCheckBox1.setEnabled(enable); /*auto refresh*/
         jCheckBox2.setEnabled(enable); /*live mode*/
+        
+        if(cm.getState().IS_FILE() && !jList1.isSelectionEmpty())
+        {
+            jButton1.setEnabled(enable); /*start/stop*/
+            jButton4.setEnabled(enable); /*stop button*/
+            jSlider2.setEnabled(enable); /*evolution bar*/
+        }
+        else
+        {
+            jButton1.setEnabled(false); /*start/stop*/
+            jButton4.setEnabled(false); /*stop button*/
+            jSlider2.setEnabled(false); /*evolution bar*/
+        }
+        
+        if(cm.getState().IS_STREAM() && cm.getState().IS_RUNNING())
+        {
+            jToggleButton2.setEnabled(enable); /*record file*/
+            
+        }
+        else
+        {
+            jToggleButton2.setEnabled(false); /*record file*/
+        }
+        
+        if((cm.getState().IS_FILE() && !jList1.isSelectionEmpty()) || (cm.getState().IS_STREAM() && cm.getState().IS_RUNNING()))
+        {
+            jSlider1.setEnabled(enable);
+        }
+        else
+        {
+            jSlider1.setEnabled(false);
+        }
+        
+        
         enableJlist(enable);
         
-        /*TODO complete*/
-        
-        /*enable or disable button in fuction of mode (file or interface)*/
-        
-        /*change name of capture button in function of capture started/stopped or not available*/
-            /*refreshStatusPanel*/
+        if(!jList3.isSelectionEmpty())
+        {
+            refreshStatusPanel((AbstractProtocolCaptured)jList3.getSelectedValue());
+        }
+        else if(!jList2.isSelectionEmpty())
+        {
+            refreshStatusPanel((AbstractProtocolCaptured)jList2.getSelectedValue());
+        }
+        else
+        {
+            refreshStatusPanel(null);
+        }
     }
     
 /*###########################################################################*/
@@ -1065,6 +1151,7 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -1086,12 +1173,30 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
     @Override
     public void coreStateRefresh() 
     {
-        /*TODO*/
+        System.out.println(""+cm.getState());
         
-        
-        
-        
-        throw new UnsupportedOperationException("Not supported yet.");
+        if(cm.getState().IS_FILE())
+        {
+            final double state_bis = (cm.getState().getComplete_tv() == 0)?0:cm.getState().getCurrent_tv()/cm.getState().getComplete_tv()*100;
+            
+            System.out.println(""+state_bis);
+            java.awt.EventQueue.invokeLater(new Runnable() {@Override public void run() {
+
+                if(cm.getState().IS_READING())
+                {
+                    jSlider2.setValue((int)state_bis);
+                }
+
+                if(cm.getState().IS_FINISHED())
+                {
+                    System.out.println("FINISHED");
+                    captureStarted = false;
+                    jButton1.setIcon(iconPlay); /*set play button*/
+                    jSlider2.setValue(100);
+                }
+
+            }});
+        }
     }
     
     private SwingWorker getConnectionWorker(final boolean enable)
@@ -1155,13 +1260,21 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
         };
     }
 
-    private SwingWorker getRefreshSourceWorker(final String selected)
+    private SwingWorker getRefreshSourceWorker(final String selected,final boolean reset)
     {
         return new SwingWorker<List<String>,Void>() 
         {
             @Override
             protected List<String> doInBackground() throws Exception
             {
+                if(reset)
+                {
+                    cm.setSource(null, null);
+                    cm.stopAllCapture();
+                    cm.stopAllModule();
+                    cm.removeAllProtocol();
+                }
+                
                 return cm.getSourceList();
             }
 
@@ -1433,7 +1546,7 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
         };
     }
     
-    private SwingWorker getStartCaptureWorker(final AbstractProtocolCaptured epc)
+    private SwingWorker getStartCaptureWorker(final AbstractProtocolCaptured epc, final Module m)
     {
         return new SwingWorker<Void,Void>() 
         {
@@ -1441,6 +1554,7 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
             protected Void doInBackground() throws Exception
             {
                 cm.startCapture(epc);
+                cm.startModule(epc,m);
                 return null;
             }
 
@@ -1491,4 +1605,65 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
         };
     }
     
+    private SwingWorker getEvolutionWorker(final int percent)
+    {
+        return new SwingWorker<Void,Void>() 
+        {
+            @Override
+            protected Void doInBackground() throws Exception
+            {
+                cm.gotoPercent(percent);
+                return null;
+            }
+
+            @Override
+            public void done() 
+            {
+                try 
+                {
+                    get();
+                    jSlider2.setValue(percent);
+                } 
+                catch (InterruptedException ex) {} /*ne surviendra jamais dans le done*/
+                catch (ExecutionException ex) 
+                {
+                    managerExecutionException("Evolution bar set", ex);
+                }
+                
+                enableUtilButton(true); /*unfreeze reader*/
+            }
+        };
+    }
+    
+    
+    private SwingWorker getSelectSourceWorker(final String src)
+    {
+        return new SwingWorker<Void,Void>() 
+        {
+            @Override
+            protected Void doInBackground() throws Exception
+            {
+                System.out.println("SET SOURCE");
+                cm.setSource(src,null);
+                System.out.println("SET SOURCE DONE");
+                return null;
+            }
+
+            @Override
+            public void done() 
+            {
+                try 
+                {
+                    get();
+                } 
+                catch (InterruptedException ex) {} /*ne surviendra jamais dans le done*/
+                catch (ExecutionException ex) 
+                {
+                    managerExecutionException("Refresh Source", ex);
+                }
+                enableUtilButton(true);
+            }
+        };
+    }
 }
+

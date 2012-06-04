@@ -84,12 +84,11 @@ public class CommunicationManagerV2
         catch (IOException ex) 
         {
             disconnect();
-            fireClosed();
             throw ex;
         }  
     }
     
-    public void setSource(String source) throws ControlException, IOException
+    public void setSource(String source, String masterFilter) throws ControlException, IOException
     {        
         System.out.println("setSource : "+state);
         if(source == null)
@@ -116,7 +115,6 @@ public class CommunicationManagerV2
             catch (IOException ex) 
             {
                 disconnect();
-                fireClosed();
                 throw ex;
             }
             
@@ -139,7 +137,9 @@ public class CommunicationManagerV2
                 state.setState(CoreState.STREAM); /*reinit state*/
                 
                 cm.selectDevice(source);
-                cm.setMasterFilter("tcp");
+                
+                if(masterFilter != null && masterFilter.length() > 0)
+                    cm.setMasterFilter(masterFilter);
                 
                 notYetStarted = true;
                 
@@ -156,7 +156,8 @@ public class CommunicationManagerV2
                 state.setState(CoreState.FILE); /*reinit state*/
                 
                 cm.selectFile(source);
-                cm.setMasterFilter("tcp");
+                if(masterFilter != null && masterFilter.length() > 0)
+                    cm.setMasterFilter(masterFilter);
                 cm.parseFile();
 
                 notYetStarted = true;
@@ -171,7 +172,6 @@ public class CommunicationManagerV2
         catch (IOException ex) 
         {
             disconnect();
-            fireClosed();
             throw ex;
         }  
     }
@@ -338,14 +338,6 @@ public class CommunicationManagerV2
         }
     }
     
-    private void fireClosed()
-    {
-        for(CoreEvent ce : object_to_call)
-        {
-            ce.connexionClosed();
-        }
-    }
-    
     private void fireListUpdated()
     {
         for(CoreEvent ce : object_to_call)
@@ -403,6 +395,7 @@ public class CommunicationManagerV2
     
     public void disconnect()
     {
+        System.out.println("disconnect");
         setAutoRefresh(false);
         if(this.isConnected())
         {
@@ -413,6 +406,7 @@ public class CommunicationManagerV2
         
         try {cm.setSocket(null);} catch (Exception ex) {}
         try {socket.close();} catch (Exception ex) {}
+        socket = null;
         this.source = null;
     }
     
@@ -603,7 +597,7 @@ public class CommunicationManagerV2
         }
     }
 
-    public void startModule(AbstractProtocolCaptured tp) throws IOException 
+    public void startModule(AbstractProtocolCaptured tp, Module m) throws IOException 
     {
         if(!tp.isCaptured())
         {
@@ -611,7 +605,7 @@ public class CommunicationManagerV2
         }
         
         
-        Module m = new HTTPModule();
+        
         m.launch(tp.getCaptureID());
         tp.setCaptureModule(m);
         this.modules.add(m);

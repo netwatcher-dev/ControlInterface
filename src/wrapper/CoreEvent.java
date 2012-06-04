@@ -11,7 +11,6 @@ package wrapper;
 public interface CoreEvent 
 {
     void protocoleListUpdated();
-    void connexionClosed();
     void errorHasOccured(Exception ex);
     void autoRefresh(boolean enable);
     void coreStateRefresh();

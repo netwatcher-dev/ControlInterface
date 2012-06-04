@@ -147,6 +147,8 @@ public class ControlMethod
                 np.setAddr_dest(InetAddress.getByAddress(ip_d));
             }
             
+            /*TODO improve filter */
+            
             /*si ce n'est pas du tcp ou de l'udp, bye bye*/
             if( tp.getType() != TransportProtocol.PROTOCOL_TYPE_TCP && tp.getType() != TransportProtocol.PROTOCOL_TYPE_UDP)
             {

@@ -71,4 +71,19 @@
     nbproject/build-impl.xml file. 
 
     -->
+    
+    
+    
+    <target name="-post-jar">  
+        <jar jarfile="dist/control-1.0.jar">  
+            <zipfileset src="${dist.jar}" excludes="META-INF/*" />  
+            <zipfileset src="dist/lib/beansbinding-1.2.1.jar" excludes="META-INF/*" />  
+            <zipfileset src="dist/lib/swing-layout-1.0.4.jar" excludes="META-INF/*" />  
+            <manifest>  
+                <attribute name="Main-Class" value="controlinterface.SimpleControlFrame"/>  
+            </manifest>  
+        </jar>  
+    </target>  
+    
+    
 </project>

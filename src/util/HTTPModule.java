@@ -15,7 +15,12 @@ import java.io.IOException;
 public class HTTPModule extends Module
 {
     private Process p;
+    private String path;
     
+    public HTTPModule(String path) 
+    {
+        this.path = path;
+    }
     
     @Override
     public boolean validModule(TransportProtocol tp) 
@@ -32,7 +37,7 @@ public class HTTPModule extends Module
     @Override
     protected void local_launch(int id)  throws IOException
     {
-        p = Runtime.getRuntime().exec("java -jar /Volumes/Home/Dropbox/Dropbox/tfe2011_2012/tfe_EPL-2011-058/src/module/ModuleHTTP_v2/pseudoProxy_v2/dist/pseudoProxy_v2.jar -ip 127.0.0.1 -port "+id);
+        p = Runtime.getRuntime().exec("java -jar "+path+" -ip 127.0.0.1 -port "+id);
     }
 
     @Override
@@ -50,5 +55,10 @@ public class HTTPModule extends Module
         /*not enough information to make a decision*/
         
         return false;
+    }
+    
+    public void setModulePath(String s) 
+    {
+        
     }
 }

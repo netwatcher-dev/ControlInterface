@@ -11,11 +11,11 @@
 package controlinterface;
 
 import dataStruct.NetworkProtocol;
-import exceptionPackage.ControlException;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -23,6 +23,8 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
+import util.HTTPModule;
+import util.Module;
 import wrapper.CommunicationManagerV2;
 import wrapper.CoreEvent;
 
@@ -44,6 +46,7 @@ public class SimpleControlFrame extends javax.swing.JFrame implements CoreEvent
     private final ImageIcon iconPause = new ImageIcon(getClass().getResource("/controlinterface/icons/media_pause.png"));
     
     private boolean captureStarted;
+    private Module m;
     
     /** Creates new form SimpleControlFrame */
     public SimpleControlFrame() 
@@ -81,6 +84,26 @@ public class SimpleControlFrame extends javax.swing.JFrame implements CoreEvent
     {
         if(enable)
         {
+            FilenameFilter ff = new FilenameFilter() {@Override public boolean accept(File file, String name) 
+            {
+                return !name.startsWith(".") && name.endsWith(".jar") && !name.startsWith("controlInterface");
+            }};
+            String [] files = new File(".").list(ff);
+            
+            if(files.length == 0)
+            {
+                JOptionPane.showMessageDialog(this,"There is no reconstitution module in the current directory : "+new File(".").getAbsolutePath(),"No reconstitution module",JOptionPane.WARNING_MESSAGE);
+                System.exit(1);
+            }
+            
+            String s = (String)JOptionPane.showInputDialog(this,"Module choice : ","Choose a Reconstitution module",JOptionPane.PLAIN_MESSAGE,null,files,null);
+            
+            if(s == null)
+                System.exit(1);
+            
+            m = new HTTPModule(s);
+            
+            
             SwingWorker worker = getConnectionWorker();
             worker.execute();
         }
@@ -361,8 +384,9 @@ public class SimpleControlFrame extends javax.swing.JFrame implements CoreEvent
                 enableTargetPanel(false);
             }
             jSlider4.setValue(0);
+            
             /*c'est le premier start, il n'y a pas encore eu de pause*/
-            getStartWorker((NetworkProtocol)jComboBox3.getSelectedItem()).execute();
+            getStartWorker((NetworkProtocol)jComboBox3.getSelectedItem(),m).execute();
         }
         else if(cm.getState().IS_PAUSE())
         {
@@ -531,7 +555,7 @@ public class SimpleControlFrame extends javax.swing.JFrame implements CoreEvent
         {
             JOptionPane.showMessageDialog(this,"The file is not yet parsed, please wait and retry","Parsing file",JOptionPane.WARNING_MESSAGE);
             jSlider4.setValue(0);
-        } // TODO add your handling code here:
+        }
     }//GEN-LAST:event_jSlider4MouseReleased
 
     
@@ -637,30 +661,30 @@ public class SimpleControlFrame extends javax.swing.JFrame implements CoreEvent
         }
     }
     
-    private void managerIOException(String from,IOException ioex)
-    {        
+    protected void managerExecutionException(String from,Exception cex)
+    {
         if(!cm.isConnected())
         {
-            JOptionPane.showMessageDialog(this, ioex.getMessage()+"\nConnexion closed",from,JOptionPane.ERROR_MESSAGE);
+            System.out.println("ERROR 1");
+            JOptionPane.showMessageDialog(this, cex.getMessage()+"\nConnexion closed",from,JOptionPane.ERROR_MESSAGE);
+        
+            java.awt.EventQueue.invokeLater(new Runnable() {
+                
+                @Override
+                public void run() {
+                    restart();
+                    dlm_target.removeAllElements();
+                    dlm_source.removeAllElements();
+                    SwingWorker worker = getConnectionWorker();
+                    worker.execute();
+                }});
+            
         }
         else
         {
-            JOptionPane.showMessageDialog(this, ioex.getMessage(),from,JOptionPane.ERROR_MESSAGE);
+            System.out.println("ERROR 2");
+            JOptionPane.showMessageDialog(this, cex.getMessage(),from,JOptionPane.ERROR_MESSAGE);
         }
-        ioex.printStackTrace();
-    }
-    
-    private void managerControlException(String from,ControlException cex)
-    {
-        JOptionPane.showMessageDialog(this, cex.getMessage(),from,JOptionPane.WARNING_MESSAGE);
-        cex.printStackTrace();
-    }
-    
-    protected void managerExecutionException(String from,ExecutionException cex)
-    {
-        JOptionPane.showMessageDialog(this, cex.getMessage(),from,JOptionPane.WARNING_MESSAGE);
-        
-        /*TODO*/
         cex.printStackTrace();        
     }
     
@@ -758,24 +782,21 @@ public class SimpleControlFrame extends javax.swing.JFrame implements CoreEvent
     }
 
     @Override
-    public void connexionClosed() 
-    {
-        /*TODO*/
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public void errorHasOccured(Exception ex) 
     {
-        /*TODO*/
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.managerExecutionException("Communication manager", ex);
     }
 
     @Override
     public void autoRefresh(boolean enable) 
     {        
-        /*TODO*/
-        throw new UnsupportedOperationException("Not supported yet.");
+                    java.awt.EventQueue.invokeLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    SwingWorker worker = getConnectionWorker();
+                    worker.execute();
+                }});
     }
 
     @Override
@@ -790,6 +811,9 @@ public class SimpleControlFrame extends javax.swing.JFrame implements CoreEvent
             System.out.println(""+state_bis);
             java.awt.EventQueue.invokeLater(new Runnable() {@Override public void run() {
 
+                if(!captureStarted)
+                    jSlider4.setValue(0);
+                
                 if(cm.getState().IS_READING())
                 {
                     jSlider4.setValue((int)state_bis);
@@ -988,7 +1012,7 @@ public class SimpleControlFrame extends javax.swing.JFrame implements CoreEvent
             protected Void doInBackground() throws Exception
             {
                 System.out.println("SET SOURCE");
-                cm.setSource(src);
+                cm.setSource(src,"tcp");
                 System.out.println("SET SOURCE DONE");
                 return null;
             }
@@ -1122,7 +1146,7 @@ public class SimpleControlFrame extends javax.swing.JFrame implements CoreEvent
         };
     }
 
-    private SwingWorker getStartWorker(final NetworkProtocol tp)
+    private SwingWorker getStartWorker(final NetworkProtocol tp,final Module m)
     {
         return new SwingWorker<Void,Void>() 
         {
@@ -1132,7 +1156,7 @@ public class SimpleControlFrame extends javax.swing.JFrame implements CoreEvent
                 if(tp != null && !tp.isCaptured())
                 {
                     cm.startCapture(tp);
-                    cm.startModule(tp);
+                    cm.startModule(tp,m);
                 }
                     
                 cm.play();

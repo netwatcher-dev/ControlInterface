@@ -136,10 +136,11 @@ public class NewStreamDialog extends javax.swing.JDialog {
                     .add(jLabel5)
                     .add(jRadioButton1)
                     .add(jRadioButton2))
-                .add(18, 18, 18)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(jButton1)
-                    .add(jButton2)))
+                    .add(jButton2))
+                .add(12, 12, 12))
         );
 
         pack();
