@@ -1,14 +1,46 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+                    GNU GENERAL PUBLIC LICENSE
+                       Version 3, 29 June 2007
 
-/*
- * filterDialog.java
- *
- * Created on 4 juin 2012, 00:09:22
- */
+ Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
+
+                            Preamble
+
+  The GNU General Public License is a free, copyleft license for
+software and other kinds of works.
+
+  The licenses for most software and other practical works are designed
+to take away your freedom to share and change the works.  By contrast,
+the GNU General Public License is intended to guarantee your freedom to
+share and change all versions of a program--to make sure it remains free
+software for all its users.  We, the Free Software Foundation, use the
+GNU General Public License for most of our software; it applies also to
+any other work released this way by its authors.  You can apply it to
+your programs, too.
+
+  When we speak of free software, we are referring to freedom, not
+price.  Our General Public Licenses are designed to make sure that you
+have the freedom to distribute copies of free software (and charge for
+them if you wish), that you receive source code or can get it if you
+want it, that you can change the software or use pieces of it in new
+free programs, and that you know you can do these things.
+
+  To protect your rights, we need to prevent others from denying you
+these rights or asking you to surrender the rights.  Therefore, you have
+certain responsibilities if you distribute copies of the software, or if
+you modify it: responsibilities to respect the freedom of others.
+*/
+
 package controlinterface.dialog;
+
+import dataStruct.AbstractProtocolCaptured;
+import dataStruct.NetworkProtocol;
+import dataStruct.TransportProtocol;
+import java.util.LinkedList;
+import java.util.List;
+import util.DataFiltering;
 
 /**
  *
@@ -16,9 +48,12 @@ package controlinterface.dialog;
  */
 public class filterDialog extends javax.swing.JDialog {
 
+    private List<DataFiltering> filter;
+    
     /** Creates new form filterDialog */
     public filterDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
+        filter = null;
         initComponents();
     }
 
@@ -125,56 +160,115 @@ public class filterDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        
+        filter = new LinkedList<DataFiltering>();
+        
+        if(jCheckBox1.isSelected())/*port under 1024*/
+        {
+            getFilter().add(new DataFiltering() {
+
+                @Override
+                public boolean validDatas(AbstractProtocolCaptured apc) {
+                    if(apc instanceof TransportProtocol)
+                    {
+                        TransportProtocol tp = (TransportProtocol)apc;
+                        
+                        if(tp.getPort_destination() > 1024)
+                            return false;
+                        
+                    }
+                    return true;
+                }
+            });
+        }
+        
+        if(jRadioButton1.isSelected())
+        {
+            getFilter().add(new DataFiltering() {
+
+                @Override
+                public boolean validDatas(AbstractProtocolCaptured apc) {
+                    if(apc instanceof TransportProtocol)
+                    {
+                        TransportProtocol tp = (TransportProtocol)apc;
+                        
+                        if(tp.getType() != TransportProtocol.PROTOCOL_TYPE_TCP)
+                            return false;
+                        
+                    }
+                    return true;
+                }
+            });
+        }
+        else if(jRadioButton2.isSelected())
+        {
+            getFilter().add(new DataFiltering() {
+
+                @Override
+                public boolean validDatas(AbstractProtocolCaptured apc) {
+                    if(apc instanceof TransportProtocol)
+                    {
+                        TransportProtocol tp = (TransportProtocol)apc;
+                        
+                        if(tp.getType() != TransportProtocol.PROTOCOL_TYPE_UDP)
+                            return false;
+                        
+                    }
+                    return true;
+                }
+            });
+        }
+        else if(jRadioButton3.isSelected())
+        {
+            getFilter().add(new DataFiltering() {
+
+                @Override
+                public boolean validDatas(AbstractProtocolCaptured apc) {
+                    if(apc instanceof TransportProtocol)
+                    {
+                        TransportProtocol tp = (TransportProtocol)apc;
+                        
+                        if(tp.getType() != TransportProtocol.PROTOCOL_TYPE_TCP && tp.getType() != TransportProtocol.PROTOCOL_TYPE_UDP)
+                            return false;
+                        
+                    }
+                    return true;
+                }
+            });
+        }
+        
+        if(jCheckBox2.isSelected())/*loopback*/
+        {
+            getFilter().add(new DataFiltering() {
+
+                @Override
+                public boolean validDatas(AbstractProtocolCaptured apc) {
+                    if(apc instanceof NetworkProtocol)
+                    {
+                        NetworkProtocol np = (NetworkProtocol)apc;
+                        
+                        if(np.getAddr_dest().isLoopbackAddress() || np.getAddr_dest().isLinkLocalAddress())
+                            return false;
+                        
+                    }
+                    return true;
+                }
+            });
+        }
+        
+        if(jCheckBox3.isSelected())/*broadcast*/
+        {
+            
+        }
+        
+        this.setVisible(false);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
+        this.setVisible(false);
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(filterDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(filterDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(filterDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(filterDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
 
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-
-            public void run() {
-                filterDialog dialog = new filterDialog(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButton1;
@@ -186,4 +280,11 @@ public class filterDialog extends javax.swing.JDialog {
     private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JRadioButton jRadioButton3;
     // End of variables declaration//GEN-END:variables
+
+    /**
+     * @return the filter
+     */
+    public List<DataFiltering> getFilter() {
+        return filter;
+    }
 }
