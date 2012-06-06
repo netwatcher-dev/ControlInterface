@@ -1,15 +1,15 @@
 10
 
 dir
-697
+701
 https://scm.info.ucl.ac.be/studentsvn/tfe_EPL-2011-058/src/control/ControlInterface/src/controlinterface/dialog
 https://scm.info.ucl.ac.be/studentsvn/tfe_EPL-2011-058
 
 
 
-2012-06-04T09:29:39.671864Z
-697
-jonathan.delvaux
+2012-06-06T09:52:32.038031Z
+701
+benjamin.vermeulen
 
 
 
@@ -28,7 +28,7 @@ f30cfedb-9f81-47fe-b1ee-1f3b12a03155
 
 MasterFilter.form
 file
-699
+
 
 
 
@@ -62,22 +62,18 @@ jonathan.delvaux
 
 MasterFilter.java
 file
-699
-
-
-
-2012-06-04T13:07:43.000000Z
-f13e83f16eea225da51c257715411e12
-2012-06-04T13:24:21.938271Z
-699
-jonathan.delvaux
 
 
 
 
+2012-06-06T09:55:27.000000Z
+64ece1687fefa598b650dd77d0cba864
+2012-06-06T09:52:32.038031Z
+701
+benjamin.vermeulen
 
 
-
+svn:special svn:externals svn:needs-lock
 
 
 
@@ -92,7 +88,11 @@ jonathan.delvaux
 
 
 
-6878
+
+
+
+
+6644
 
 NewStreamDialog.form
 file
@@ -134,11 +134,14 @@ file
 
 
 
-2012-06-04T09:26:25.000000Z
-39aa6b3b9ca6664aaef008d0114eefa2
-2012-06-04T09:29:39.671864Z
-697
-jonathan.delvaux
+2012-06-06T09:55:27.000000Z
+66f2a2d2fe7003530ed442dc99583726
+2012-06-06T09:52:32.038031Z
+701
+benjamin.vermeulen
+
+
+svn:special svn:externals svn:needs-lock
 
 
 
@@ -157,10 +160,7 @@ jonathan.delvaux
 
 
 
-
-
-
-10572
+10231
 
 ParameterDialog.form
 file
@@ -202,11 +202,14 @@ file
 
 
 
-2012-06-04T09:26:32.000000Z
-37470fc221fe9ede89564818d84b3a0d
-2012-06-04T09:29:39.671864Z
-697
-jonathan.delvaux
+2012-06-06T09:55:27.000000Z
+e57d80ff58a0bba6bfd684c003ec3e04
+2012-06-06T09:52:32.038031Z
+701
+benjamin.vermeulen
+
+
+svn:special svn:externals svn:needs-lock
 
 
 
@@ -225,14 +228,11 @@ jonathan.delvaux
 
 
 
-
-
-
-14041
+13797
 
 filterDialog.form
 file
-698
+
 
 
 
@@ -266,22 +266,18 @@ jonathan.delvaux
 
 filterDialog.java
 file
-699
-
-
-
-2012-06-04T13:22:14.000000Z
-cce820ec51ba6110e35a89adfafd2b17
-2012-06-04T13:24:21.938271Z
-699
-jonathan.delvaux
 
 
 
 
+2012-06-06T09:55:27.000000Z
+91d3caa7ee50fda98740da9f6984faba
+2012-06-06T09:52:32.038031Z
+701
+benjamin.vermeulen
 
 
-
+svn:special svn:externals svn:needs-lock
 
 
 
@@ -296,5 +292,9 @@ jonathan.delvaux
 
 
 
-16095
+
+
+
+
+15855
 

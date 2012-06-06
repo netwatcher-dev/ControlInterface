@@ -42,10 +42,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
-/**
- *
- * @author djo
- */
 public class ParameterLoader 
 {
     private Properties parameter;

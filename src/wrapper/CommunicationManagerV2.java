@@ -53,10 +53,6 @@ import java.util.Map;
 import util.DataFiltering;
 import util.Module;
 
-/**
- *
- * @author djo
- */
 public class CommunicationManagerV2 
 {
     private static CommunicationManagerV2 self;

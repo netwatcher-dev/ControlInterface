@@ -35,11 +35,6 @@ you modify it: responsibilities to respect the freedom of others.
 
 package dataStruct;
 
-
-/**
- *
- * @author djo
- */
 public class TransportProtocol extends AbstractProtocolCaptured
 {    
     public static final short PROTOCOL_TYPE_TCP = 6;

@@ -39,10 +39,6 @@ import dataStruct.NetworkProtocol;
 import dataStruct.TransportProtocol;
 import java.io.IOException;
 
-/**
- *
- * @author djo
- */
 public class HTTPModule extends Module
 {
     private Process p;

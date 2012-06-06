@@ -35,10 +35,7 @@ you modify it: responsibilities to respect the freedom of others.
 
 package exceptionPackage;
 
-/**
- *
- * @author djo
- */
+
 public class ControlException extends Exception
 {
     public static final int STATE_NO_ERROR = 0;

@@ -35,11 +35,6 @@ you modify it: responsibilities to respect the freedom of others.
 
 package dataStruct;
 
-
-/**
- *
- * @author djo
- */
 public class CoreState 
 {
     private int state;

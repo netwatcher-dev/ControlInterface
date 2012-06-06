@@ -52,10 +52,7 @@ import java.util.List;
 import java.util.Map;
 import util.DataFiltering;
 
-/**
- *
- * @author djo
- */
+
 public class ControlMethod 
 {
     public static final int COMMAND_DEVICE_LIST = 1; /*recupere la liste des interfaces reseaux disponible pour l'ecoute*/

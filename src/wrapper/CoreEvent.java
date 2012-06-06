@@ -35,10 +35,6 @@ you modify it: responsibilities to respect the freedom of others.
 
 package wrapper;
 
-/**
- *
- * @author djo
- */
 public interface CoreEvent 
 {
     void protocoleListUpdated();

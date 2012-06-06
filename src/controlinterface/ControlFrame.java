@@ -44,7 +44,6 @@ import dataStruct.NetworkProtocol;
 import dataStruct.TransportProtocol;
 import exceptionPackage.ControlException;
 import java.awt.Color;
-import java.awt.datatransfer.DataFlavor;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -57,16 +56,12 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
-import util.DataFiltering;
 import util.HTTPModule;
 import util.Module;
 import wrapper.CommunicationManagerV2;
 import wrapper.CoreEvent;
 
-/**
- *
- * @author ben
- */
+
 public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptionHandler, CoreEvent
 {
     private static final String START_RECONSTITUTION = "Start reconstitution";

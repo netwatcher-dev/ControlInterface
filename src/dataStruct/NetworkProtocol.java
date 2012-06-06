@@ -39,10 +39,6 @@ import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- *
- * @author djo
- */
 public class NetworkProtocol extends AbstractProtocolCaptured<TransportProtocol>
 {
     private int ver;

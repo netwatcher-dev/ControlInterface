@@ -43,10 +43,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 
-/**
- *
- * @author ben
- */
 public class MyIconListRenderer extends DefaultListCellRenderer {
     
     @Override

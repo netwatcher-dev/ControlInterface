@@ -54,10 +54,6 @@ import util.Module;
 import wrapper.CommunicationManagerV2;
 import wrapper.CoreEvent;
 
-/**
- *
- * @author djo
- */
 public class SimpleControlFrame extends javax.swing.JFrame implements CoreEvent
 {
     private ControlFrameMouseAdapter cfma;
