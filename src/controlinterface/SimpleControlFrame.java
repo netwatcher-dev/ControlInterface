@@ -109,7 +109,7 @@ public class SimpleControlFrame extends javax.swing.JFrame implements CoreEvent
         {
             FilenameFilter ff = new FilenameFilter() {@Override public boolean accept(File file, String name) 
             {
-                return !name.startsWith(".") && name.endsWith(".jar") && !name.startsWith("controlInterface");
+                return !name.startsWith(".") && name.endsWith(".jar") && !name.startsWith("control");
             }};
             String [] files = new File(".").list(ff);
             

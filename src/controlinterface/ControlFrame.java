@@ -657,7 +657,7 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
         {
             FilenameFilter ff = new FilenameFilter() {@Override public boolean accept(File file, String name) 
             {
-                return !name.startsWith(".") && name.endsWith(".jar") && !name.startsWith("controlInterface");
+                return !name.startsWith(".") && name.endsWith(".jar") && !name.startsWith("control");
             }};
             String [] files = new File(".").list(ff);
             
