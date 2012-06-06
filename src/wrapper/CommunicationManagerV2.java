@@ -42,6 +42,7 @@ import dataStruct.NetworkProtocol;
 import dataStruct.TransportProtocol;
 import exceptionPackage.ControlException;
 import java.io.IOException;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Collection;
@@ -499,14 +500,33 @@ public class CommunicationManagerV2
         if(apc instanceof TransportProtocol)
         {
             TransportProtocol tp = (TransportProtocol) apc;
-            bpf = "ip host "+tp.getParent().getAddr_src().getHostAddress()
+            
+            if(tp.getParent().getAddr_src() instanceof Inet6Address)
+            {
+                bpf = "ip6 host "+tp.getParent().getAddr_src().getHostAddress()
                    + " and tcp port "+tp.getPort_destination();
+            }
+            else
+            {
+                bpf = "ip host "+tp.getParent().getAddr_src().getHostAddress()
+                   + " and tcp port "+tp.getPort_destination();
+            }
+            
+            
         }
         else if(apc instanceof NetworkProtocol)
         {
             NetworkProtocol np = (NetworkProtocol)apc;
-            bpf = "ip host "+np.getAddr_src().getHostAddress()
+            if(np.getAddr_src() instanceof Inet6Address)
+            {
+                bpf = "ip6 host "+np.getAddr_src().getHostAddress()
                    + " and tcp port 80";
+            }
+            else
+            {
+                bpf = "ip host "+np.getAddr_src().getHostAddress()
+                   + " and tcp port 80";
+            }
         }
         else
         {
