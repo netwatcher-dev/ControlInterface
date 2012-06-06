@@ -43,15 +43,160 @@ import java.util.List;
 import util.DataFiltering;
 import wrapper.CommunicationManagerV2;
 
-public class filterDialog extends javax.swing.JDialog {
+public class filterDialog extends javax.swing.JDialog 
+{
+    
+    public static DataFiltering PORT_UNDER_1024 = new DataFiltering() 
+    {
+        @Override
+        public boolean validDatas(AbstractProtocolCaptured apc) 
+        {
+            if(apc instanceof TransportProtocol)
+            {
+                TransportProtocol tp = (TransportProtocol)apc;
 
-    private List<DataFiltering> filter;
+                if(tp.getPort_destination() > 1024)
+                    return false;
+
+            }
+            return true;
+        }
+    };
+    
+    public static DataFiltering ONLY_TCP = new DataFiltering() 
+    {
+        @Override
+        public boolean validDatas(AbstractProtocolCaptured apc) 
+        {
+            if(apc instanceof TransportProtocol)
+            {
+                TransportProtocol tp = (TransportProtocol)apc;
+
+                if(tp.getType() != TransportProtocol.PROTOCOL_TYPE_TCP)
+                    return false;
+
+            }
+            return true;
+        }
+    };
+    
+    public static DataFiltering ONLY_UDP = new DataFiltering() 
+    {
+        @Override
+        public boolean validDatas(AbstractProtocolCaptured apc) 
+        {
+            if(apc instanceof TransportProtocol)
+            {
+                TransportProtocol tp = (TransportProtocol)apc;
+
+                if(tp.getType() != TransportProtocol.PROTOCOL_TYPE_UDP)
+                    return false;
+
+            }
+            return true;
+        }
+    };
+    
+    public static DataFiltering TCP_OR_UDP = new DataFiltering() 
+    {
+        @Override
+        public boolean validDatas(AbstractProtocolCaptured apc) 
+        {
+            if(apc instanceof TransportProtocol)
+            {
+                TransportProtocol tp = (TransportProtocol)apc;
+
+                if(tp.getType() != TransportProtocol.PROTOCOL_TYPE_TCP && tp.getType() != TransportProtocol.PROTOCOL_TYPE_UDP)
+                    return false;
+
+            }
+            return true;
+        }
+    };
+    
+    public static DataFiltering NO_LOOPBACK = new DataFiltering() 
+    {
+        @Override
+        public boolean validDatas(AbstractProtocolCaptured apc) 
+        {
+            if(apc instanceof NetworkProtocol)
+            {
+                NetworkProtocol np = (NetworkProtocol)apc;
+
+                if(np.getAddr_dest().isLoopbackAddress() || np.getAddr_dest().isLinkLocalAddress())
+                    return false;
+
+            }
+            return true;
+        }
+    };
+    
+    public static DataFiltering NO_MULTICAST = new DataFiltering() 
+    {
+        @Override
+        public boolean validDatas(AbstractProtocolCaptured apc) 
+        {
+            if(apc instanceof NetworkProtocol)
+            {
+                NetworkProtocol np = (NetworkProtocol)apc;
+
+                if(np.getAddr_dest().isMulticastAddress())
+                    return false;
+
+            }
+            return true;
+        }
+    };
+    
+    public static DataFiltering ONLY_WEB = new DataFiltering() 
+    {
+        @Override
+        public boolean validDatas(AbstractProtocolCaptured apc) 
+        {
+            if(apc instanceof TransportProtocol)
+            {
+                TransportProtocol tp = (TransportProtocol)apc;
+
+                if(tp.getPort_destination() != 80 && tp.getPort_destination() != 8080)
+                    return false;
+
+            }
+            return true;
+        }
+    };
     
     /** Creates new form filterDialog */
-    public filterDialog(java.awt.Frame parent, boolean modal) {
+    public filterDialog(java.awt.Frame parent, boolean modal) 
+    {
         super(parent, modal);
-        filter = null;
         initComponents();
+        
+        if(CommunicationManagerV2.getInstance().getFilters() == null)
+            return;
+        
+        jCheckBox1.setSelected(CommunicationManagerV2.getInstance().getFilters().contains(PORT_UNDER_1024));
+        jCheckBox2.setSelected(CommunicationManagerV2.getInstance().getFilters().contains(NO_LOOPBACK));
+        jCheckBox3.setSelected(CommunicationManagerV2.getInstance().getFilters().contains(NO_MULTICAST));
+        
+        if(CommunicationManagerV2.getInstance().getFilters().contains(ONLY_TCP))
+        {
+            jRadioButton1.setSelected(true);
+            jRadioButton2.setSelected(false);
+            jRadioButton3.setSelected(false);
+        }
+        else if(CommunicationManagerV2.getInstance().getFilters().contains(ONLY_UDP))
+        {
+            jRadioButton1.setSelected(false);
+            jRadioButton2.setSelected(true);
+            jRadioButton3.setSelected(false);
+        }
+        else
+        {
+            jRadioButton1.setSelected(false);
+            jRadioButton2.setSelected(false);
+            jRadioButton3.setSelected(true);
+        }
+        
     }
 
     @SuppressWarnings("unchecked")
@@ -153,118 +298,34 @@ public class filterDialog extends javax.swing.JDialog {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         
-        filter = new LinkedList<DataFiltering>();
+        List<DataFiltering> filter = new LinkedList<DataFiltering>();
         
         if(jCheckBox1.isSelected())/*port under 1024*/
         {
-            filter.add(new DataFiltering() {
-
-                @Override
-                public boolean validDatas(AbstractProtocolCaptured apc) {
-                    if(apc instanceof TransportProtocol)
-                    {
-                        TransportProtocol tp = (TransportProtocol)apc;
-                        
-                        if(tp.getPort_destination() > 1024)
-                            return false;
-                        
-                    }
-                    return true;
-                }
-            });
+            filter.add(PORT_UNDER_1024);
         }
         
         if(jRadioButton1.isSelected())
         {
-            filter.add(new DataFiltering() {
-
-                @Override
-                public boolean validDatas(AbstractProtocolCaptured apc) {
-                    if(apc instanceof TransportProtocol)
-                    {
-                        TransportProtocol tp = (TransportProtocol)apc;
-                        
-                        if(tp.getType() != TransportProtocol.PROTOCOL_TYPE_TCP)
-                            return false;
-                        
-                    }
-                    return true;
-                }
-            });
+            filter.add(ONLY_TCP);
         }
         else if(jRadioButton2.isSelected())
         {
-            filter.add(new DataFiltering() {
-
-                @Override
-                public boolean validDatas(AbstractProtocolCaptured apc) {
-                    if(apc instanceof TransportProtocol)
-                    {
-                        TransportProtocol tp = (TransportProtocol)apc;
-                        
-                        if(tp.getType() != TransportProtocol.PROTOCOL_TYPE_UDP)
-                            return false;
-                        
-                    }
-                    return true;
-                }
-            });
+            filter.add(ONLY_UDP);
         }
         else if(jRadioButton3.isSelected())
         {
-            filter.add(new DataFiltering() {
-
-                @Override
-                public boolean validDatas(AbstractProtocolCaptured apc) {
-                    if(apc instanceof TransportProtocol)
-                    {
-                        TransportProtocol tp = (TransportProtocol)apc;
-                        
-                        if(tp.getType() != TransportProtocol.PROTOCOL_TYPE_TCP && tp.getType() != TransportProtocol.PROTOCOL_TYPE_UDP)
-                            return false;
-                        
-                    }
-                    return true;
-                }
-            });
+            filter.add(TCP_OR_UDP);
         }
         
         if(jCheckBox2.isSelected())/*loopback*/
         {
-            filter.add(new DataFiltering() {
-
-                @Override
-                public boolean validDatas(AbstractProtocolCaptured apc) {
-                    if(apc instanceof NetworkProtocol)
-                    {
-                        NetworkProtocol np = (NetworkProtocol)apc;
-                        
-                        if(np.getAddr_dest().isLoopbackAddress() || np.getAddr_dest().isLinkLocalAddress())
-                            return false;
-                        
-                    }
-                    return true;
-                }
-            });
+            filter.add(NO_LOOPBACK);
         }
         
         if(jCheckBox3.isSelected())/*multicast*/
         {
-            filter.add(new DataFiltering() {
-
-                @Override
-                public boolean validDatas(AbstractProtocolCaptured apc) {
-                    if(apc instanceof NetworkProtocol)
-                    {
-                        NetworkProtocol np = (NetworkProtocol)apc;
-                        
-                        if(np.getAddr_dest().isMulticastAddress())
-                            return false;
-                        
-                    }
-                    return true;
-                }
-            });
+            filter.add(NO_MULTICAST);
         }
         
         CommunicationManagerV2.getInstance().setFilters(filter);
@@ -288,86 +349,15 @@ public class filterDialog extends javax.swing.JDialog {
     private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JRadioButton jRadioButton3;
     // End of variables declaration//GEN-END:variables
-
-    /**
-     * @return the filter
-     */
-    public List<DataFiltering> getFilter() {
-        return filter;
-    }
     
     public static List<DataFiltering> getDefaultFilter()
     {
         List<DataFiltering> filter = new LinkedList<DataFiltering>();
         
-        filter.add(new DataFiltering() 
-        {
-            @Override
-            public boolean validDatas(AbstractProtocolCaptured apc) 
-            {
-                if(apc instanceof TransportProtocol)
-                {
-                    TransportProtocol tp = (TransportProtocol)apc;
-                    
-                    if( tp.getPort_destination() > 1024)
-                        return false;
-
-                }
-                return true;
-            }
-        });
-
-        filter.add(new DataFiltering() 
-        {
-            @Override
-            public boolean validDatas(AbstractProtocolCaptured apc) 
-            {
-                if(apc instanceof TransportProtocol)
-                {
-                    TransportProtocol tp = (TransportProtocol)apc;
-                    
-                    if(tp.getType() != TransportProtocol.PROTOCOL_TYPE_TCP && tp.getType() != TransportProtocol.PROTOCOL_TYPE_UDP)
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        });
-
-        filter.add(new DataFiltering() 
-        {
-            @Override
-            public boolean validDatas(AbstractProtocolCaptured apc) 
-            {
-                if(apc instanceof NetworkProtocol)
-                {
-                    NetworkProtocol np = (NetworkProtocol)apc;
-
-                    if(np.getAddr_dest().isLoopbackAddress() || np.getAddr_dest().isLinkLocalAddress())
-                        return false;
-
-                }
-                return true;
-            }
-        });
-
-        filter.add(new DataFiltering() 
-        {
-            @Override
-            public boolean validDatas(AbstractProtocolCaptured apc) 
-            {
-                if(apc instanceof NetworkProtocol)
-                {
-                    NetworkProtocol np = (NetworkProtocol)apc;
-
-                    if(np.getAddr_dest().isMulticastAddress())
-                        return false;
-
-                }
-                return true;
-            }
-        });
+        filter.add(PORT_UNDER_1024);
+        filter.add(TCP_OR_UDP);
+        filter.add(NO_LOOPBACK);
+        filter.add(NO_MULTICAST);
 
         return filter;
     }
@@ -380,73 +370,10 @@ public class filterDialog extends javax.swing.JDialog {
     {
         List<DataFiltering> filter = new LinkedList<DataFiltering>();
         
-        filter.add(new DataFiltering() 
-        {
-            @Override
-            public boolean validDatas(AbstractProtocolCaptured apc) 
-            {
-                if(apc instanceof TransportProtocol)
-                {
-                    TransportProtocol tp = (TransportProtocol)apc;
-
-                    if(tp.getPort_destination() != 80 && tp.getPort_destination() != 8080)
-                        return false;
-
-                }
-                return true;
-            }
-        });
-
-        filter.add(new DataFiltering() 
-        {
-            @Override
-            public boolean validDatas(AbstractProtocolCaptured apc) 
-            {
-                if(apc instanceof TransportProtocol)
-                {
-                    TransportProtocol tp = (TransportProtocol)apc;
-
-                    if(tp.getType() != TransportProtocol.PROTOCOL_TYPE_TCP)
-                        return false;
-
-                }
-                return true;
-            }
-        });
-
-        filter.add(new DataFiltering() 
-        {
-            @Override
-            public boolean validDatas(AbstractProtocolCaptured apc) 
-            {
-                if(apc instanceof NetworkProtocol)
-                {
-                    NetworkProtocol np = (NetworkProtocol)apc;
-
-                    if(np.getAddr_dest().isLoopbackAddress() || np.getAddr_dest().isLinkLocalAddress())
-                        return false;
-
-                }
-                return true;
-            }
-        });
-
-        filter.add(new DataFiltering() 
-        {
-            @Override
-            public boolean validDatas(AbstractProtocolCaptured apc) 
-            {
-                if(apc instanceof NetworkProtocol)
-                {
-                    NetworkProtocol np = (NetworkProtocol)apc;
-
-                    if(np.getAddr_dest().isMulticastAddress())
-                        return false;
-
-                }
-                return true;
-            }
-        });
+        filter.add(ONLY_WEB);
+        filter.add(ONLY_TCP);
+        filter.add(NO_LOOPBACK);
+        filter.add(NO_MULTICAST);
 
         return filter;
     }
