@@ -90,7 +90,11 @@ public class CommunicationManagerV2
         
         /*routine de sortie*/
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() 
-        {@Override public void run() {disconnect();}}));
+        {@Override public void run() {
+            stopAllModule();
+            disconnect();
+            
+        }}));
     }
     
     public List<String> getSourceList() throws ControlException, IOException
@@ -117,7 +121,7 @@ public class CommunicationManagerV2
     
     public void setSource(String source, String masterFilter) throws ControlException, IOException
     {        
-        System.out.println("setSource : "+state);
+        System.out.println("setSource "+source+" : "+state);
         if(source == null)
         {
             removeAllProtocol();
@@ -171,9 +175,7 @@ public class CommunicationManagerV2
                 setRefreshTarget(true);
                 setRefreshCoreState(false);
                 setAutoRefresh(true);
-                
-                this.source = source;
-                
+                                
                 state.setRunning(true);
             }
             else if(state.IS_FILE())
@@ -188,15 +190,17 @@ public class CommunicationManagerV2
                 setRefreshTarget(true);
                 setRefreshCoreState(true);
                 setAutoRefresh(true);
-                
-                this.source = source;
             }
         } 
         catch (IOException ex) 
         {
             disconnect();
             throw ex;
-        }  
+        }
+        finally
+        {
+            this.source = source;
+        }
     }
     
     public synchronized void setAutoRefresh(boolean enable)
@@ -606,9 +610,12 @@ public class CommunicationManagerV2
         state.setRecording(false);
     }
 
+    /*speed are from -15 to 15*/
+    
     public void setSpeed(int speed) throws IOException, ControlException 
     {
-        cm.setSpeed((int)(speed * 1.27));        
+        
+        cm.setSpeed((int)(speed * 8.46));        
     }
 
     /**

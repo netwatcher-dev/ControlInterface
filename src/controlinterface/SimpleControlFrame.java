@@ -300,9 +300,10 @@ public class SimpleControlFrame extends javax.swing.JFrame implements CoreEvent
             }
         });
 
-        jSlider3.setMajorTickSpacing(50);
-        jSlider3.setMinimum(-100);
-        jSlider3.setMinorTickSpacing(10);
+        jSlider3.setMajorTickSpacing(5);
+        jSlider3.setMaximum(15);
+        jSlider3.setMinimum(-15);
+        jSlider3.setMinorTickSpacing(1);
         jSlider3.setPaintLabels(true);
         jSlider3.setPaintTicks(true);
         jSlider3.setSnapToTicks(true);

@@ -376,9 +376,10 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
                 .addContainerGap())
         );
 
-        jSlider1.setMajorTickSpacing(50);
-        jSlider1.setMinimum(-100);
-        jSlider1.setMinorTickSpacing(10);
+        jSlider1.setMajorTickSpacing(5);
+        jSlider1.setMaximum(15);
+        jSlider1.setMinimum(-15);
+        jSlider1.setMinorTickSpacing(1);
         jSlider1.setPaintLabels(true);
         jSlider1.setPaintTicks(true);
         jSlider1.setSnapToTicks(true);
@@ -559,6 +560,16 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
             JOptionPane.showMessageDialog(this,"The file is not yet parsed, please wait and retry","Parsing file",JOptionPane.WARNING_MESSAGE);
             return;
         }
+        
+        if(!cm.isCaptureInProgress())
+        {
+            int n = JOptionPane.showConfirmDialog(this,"There is no capture module started, are you sure to want to read the file?","No capture in progress",JOptionPane.YES_NO_OPTION);
+            System.out.println(""+n);
+            if(n == JOptionPane.NO_OPTION)
+            {
+                return;
+            }
+        }
 
         enableUtilButton(false); /*freeze the reader pannel*/
         
@@ -670,7 +681,7 @@ public class ControlFrame extends javax.swing.JFrame implements UncaughtExceptio
             String s = (String)JOptionPane.showInputDialog(this,"Module choice : ","Choose a Reconstitution module",JOptionPane.PLAIN_MESSAGE,null,files,null);
             
             if(s == null)
-                System.exit(1);
+                return;
             
             Module m = new HTTPModule(s);
 
