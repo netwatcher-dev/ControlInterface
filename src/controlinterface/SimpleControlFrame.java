@@ -1137,6 +1137,11 @@ public class SimpleControlFrame extends javax.swing.JFrame implements CoreEvent
             @Override
             protected Void doInBackground() throws Exception
             {
+                if(cm.getState().IS_FILE())
+                {
+                    cm.getCm().fileStop();
+                }
+                
                 cm.stopAllCapture();
                 cm.stopAllModule();
                 return null;
